@@ -28,17 +28,25 @@ For this project we are implementing the method described in the paper
 ["Color transfer between images"](https://ieeexplore.ieee.org/abstract/document/946629)
 by E. Reinhard, M. Adhikhmin, B. Gooch et al.
 
-First we split both the images into their respective l, a, b channels.
+First we convert the color space of both the reference image and input image
+into CIE L\*a\*b\* color space
+
+```python
+    reference = cv2.cvtColor(reference, cv2.COLOR_BGR2LAB).astype("float32")
+    input = cv2.cvtColor(input, cv2.COLOR_BGR2LAB).astype("float32")
+```
+
+And split both the images into their respective l, a, b channels.
 
 ```python
     (l_ref, a_ref, b_ref) = cv2.split(reference)
     (l_in, a_in, b_in) = cv2.split(input)
 ```
 
-![formula](attachments/formula.png)
-
-Then we apply the transform shown above to each of the input channels
+Then we apply the transform shown below to each of the input channels
 separately.
+
+![formula](attachments/formula.png)
 
 ```python
     l_out = ((l_ref.std() / l_in.std()) * (l_in - l_in.mean())) + l_ref.mean()
@@ -51,6 +59,8 @@ We merge the channels we get from the transform to give us the output image.
 ```python
     output = cv2.merge([l_out, a_out, b_out])
 ```
+
+And that's it we have an output image with a transferred palette.
 
 ##### Advantages:
 
